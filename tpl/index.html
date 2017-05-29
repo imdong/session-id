@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TestDemo - Session Id</title>
+    <script type="text/javascript" src="/session_id.js" data-session-id="{$php.session_id}"></script>
+    <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <div>Your Session ID: <b class="session_id">Loading...</b></div>
+    <div>Your Set Name: <b class="username">Loading...</b></div>
+    <div>First Visit Time: <b class="usertime">Loading...</b></div>
+    <div>Current Time: <b>{$php.view_time}</b></div>
+    <div>
+        <form action="?cmd=set_name" method="POST">
+            <input type="hidden" name="PHPSESSID" value="" class="session_id" />
+            <lable>Your Name: <input type="text" name="name" value="" /></lable>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+    <script type="text/javascript">
+        // 修改页面需要session_id的地方
+        var session_id_obj_list = document.getElementsByClassName('session_id');
+        for (var i = 0; i < session_id_obj_list.length; i++) {
+            if('undefined' != typeof session_id_obj_list[i].value){
+                session_id_obj_list[i].value = session_id;
+            } else
+            if('undefined' != typeof session_id_obj_list[i].innerText){
+                session_id_obj_list[i].innerText = session_id;
+            }
+        }
+        console.log('session_id', session_id);
+
+        // 动态加载用户名
+        jQuery.ajax({
+            url: '?cmd=get_name',
+            type: 'GET',
+            dataType: 'JSON',
+            data: {
+                'PHPSESSID': session_id
+            },
+            success: function(data, textStatus, xhr) {
+                console.log('userinfo', data);
+                document.getElementsByClassName('username')[0].innerText = data.username;
+                document.getElementsByClassName('usertime')[0].innerText = data.usertime;
+            }
+        });
+    </script>
+</body>
+</html>
